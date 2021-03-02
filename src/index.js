@@ -7,6 +7,8 @@ import '@tradeshift/tradeshift-ui/ts.css';
 import '../styles/styles.less';
 import Polygon from './dom/polygon';
 import { element, removeNode } from './dom/dom';
+import { isTriangle, getLastPoint } from './math/triangle';
+import { getDist } from './math/cartesian';
 
 const validateTriLen = (errors, values, val) => {
   if (!values[val]) {
@@ -71,8 +73,7 @@ const TriangleSidesForm = () => {
         const x2 = 100 + alpha;
         const y2 = 400;
 
-        const x = (beta ** 2 - gamma ** 2 + 2 * x1 * alpha + alpha ** 2) / (2 * alpha);
-        const y = y1 - Math.sqrt(beta ** 2 - (x - x1) ** 2);
+        const { x, y } = getLastPoint(x1, y1, alpha, beta, gamma);
         
         polygon = addPolygon(
           {
@@ -196,14 +197,6 @@ const getCoords = polygonPoints => {
       y: +v.split(',')[1],
     };
   });
-}
-
-const getDist = (p1, p2) => {
-  return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
-}
-
-const isTriangle = (s1, s2, s3) => {
-  return s1 + s2 > s3 && s1 + s3 > s2 && s2 + s3 > s1;
 }
 
 const addPolygon = (points) => {
