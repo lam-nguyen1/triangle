@@ -34,6 +34,7 @@ const TriangleSidesForm = () => {
     },
     validate,
     onSubmit: values => {
+      removeNode(em, triCont);
       const initPolygon = addPolygon(
         {
           x: 250,
@@ -44,8 +45,8 @@ const TriangleSidesForm = () => {
           y2: 400,
         },
       );
-      const svg1 = element('svg', {width: '500', height: '500'}, [initPolygon])
-      let triCont = element('div', { class: 'triangle-container' }, [svg1]);
+      const svg1 = element('svg', { width: '500', height: '500' }, [initPolygon])
+      triCont = element('div', { className: 'triangle-container' }, [svg1]);
       em.appendChild(triCont);
     
       const coords = getCoords(initPolygon.getAttribute('points'));
@@ -185,6 +186,8 @@ const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
 
 const em = document.querySelector('em');
+
+let triCont;
 
 const getCoords = polygonPoints => {
   return polygonPoints.split(' ').map(v => {
