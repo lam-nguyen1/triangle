@@ -25,10 +25,12 @@ const INITIAL_TRIANGLE_POINTS = [
 ];
 
 const validateTriLen = (errors, values, val) => {
-  if (!values[val]) {
-    errors[val] = 'Required';
-  } else if (values[val] > 1 || values[val] < 0) {
-    errors[val] = 'Must be between 0 and 1(inclusive). Example: 0.5';
+  if (!values[val] && Number.isNaN(values[val])) {
+    errors[val] = 'This field is required.';
+  } else if (Number.isNaN(values[val])) {
+    errors[val] = 'Must be a number';
+  } else if (values[val] <= 0) {
+    errors[val] = 'Distance must be larger than zero. Example: 3';
   }
 }
 
@@ -67,9 +69,11 @@ const TriangleSidesForm = () => {
 
       const { sideOne, sideTwo, sideThree } = values;
 
-      const alpha = sideOne * dist1;
-      const beta = sideTwo * dist2;
-      const gamma = sideThree * dist3;
+      const max = Math.max(sideOne, sideTwo, sideThree);
+
+      const alpha = sideOne / max * dist1;
+      const beta = sideTwo / max * dist2;
+      const gamma = sideThree / max * dist3;
 
       const isTri = isTriangle(alpha, beta, gamma);
 
