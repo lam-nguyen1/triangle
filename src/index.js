@@ -5,6 +5,7 @@ import '@tradeshift/tradeshift-ui';
 import '@tradeshift/tradeshift-ui/ts.css';
 
 import '../styles/styles.less';
+import { getLabelStartForSide1, getLabelStart } from './math/label-strategy';
 import { isTriangle, getLastPoint } from './math/triangle';
 import { getDist } from './math/cartesian';
 
@@ -182,6 +183,30 @@ const TriangleSidesForm = () => {
               <div className="triangle-container">
                 <svg height="500" width="500">
                     <polygon points={getPoints(trianglePoints)} className="triangle" />
+                    <text 
+                      x={getLabelStartForSide1(trianglePoints[1], trianglePoints[2], 20).x}
+                      y={getLabelStartForSide1(trianglePoints[1], trianglePoints[2], 20).y}
+                      textAnchor="middle"
+                      fill="black"
+                      fontSize="14">
+                        Side 1
+                    </text>
+                    <text 
+                      x={getLabelStart(trianglePoints[0], trianglePoints[1], -25).x}
+                      y={getLabelStart(trianglePoints[0], trianglePoints[1], -25).y}
+                      textAnchor="middle"
+                      fill="black"
+                      fontSize="14">
+                        Side 2
+                    </text>
+                    <text 
+                      x={getLabelStart(trianglePoints[0], trianglePoints[2], 25).x}
+                      y={getLabelStart(trianglePoints[0], trianglePoints[2], 25).y}
+                      textAnchor="middle"
+                      fill="black"
+                      fontSize="14">
+                        Side 3
+                    </text>
                 </svg>
               </div>
             }
