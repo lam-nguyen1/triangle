@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { useFormik } from 'formik';
 import '@tradeshift/tradeshift-ui';
 import '@tradeshift/tradeshift-ui/ts.css';
 
 import '../styles/styles.less';
-import Polygon from './dom/polygon';
-import { element, removeNode } from './dom/dom';
 import { isTriangle, getLastPoint } from './math/triangle';
 import { getDist } from './math/cartesian';
+
+const INITIAL_TRIANGLE_POINTS = [
+  {
+    x: 250,
+    y: 378940/2703,
+  },
+  {
+    x: 100,
+    y: 400,
+  },
+  {
+    x: 400,
+    y: 400,
+  }
+];
 
 const validateTriLen = (errors, values, val) => {
   if (!values[val]) {
@@ -27,7 +40,18 @@ const validate = values => {
   return errors;
 };
 
+const getPoints = trianglePoints => {
+  let polygonPoints = '';
+  trianglePoints.forEach(point => {
+    polygonPoints += `${point.x}, ${point.y} `;
+  });
+  return polygonPoints;
+}
+
 const TriangleSidesForm = () => {
+  const [showTriangle, toggle] = useState(false);
+  const [trianglePoints, setPoints] = useState(INITIAL_TRIANGLE_POINTS);
+
   const formik = useFormik({
     initialValues: {
       sideOne: '',
@@ -36,26 +60,9 @@ const TriangleSidesForm = () => {
     },
     validate,
     onSubmit: values => {
-      removeNode(em, triCont);
-      const initPolygon = addPolygon(
-        {
-          x: 250,
-          y: 378940/2703,
-          x1: 100,
-          y1: 400,
-          x2: 400,
-          y2: 400,
-        },
-      );
-      const svg1 = element('svg', { width: '500', height: '500' }, [initPolygon])
-      triCont = element('div', { className: 'triangle-container' }, [svg1]);
-      em.appendChild(triCont);
-    
-      const coords = getCoords(initPolygon.getAttribute('points'));
-      const dist1 = getDist(coords[0], coords[1]);
-      const dist2 = getDist(coords[0], coords[2]);
-      const dist3 = getDist(coords[1], coords[2]);
-      let polygon;
+      const dist1 = getDist(INITIAL_TRIANGLE_POINTS[0], INITIAL_TRIANGLE_POINTS[1]);
+      const dist2 = getDist(INITIAL_TRIANGLE_POINTS[0], INITIAL_TRIANGLE_POINTS[2]);
+      const dist3 = getDist(INITIAL_TRIANGLE_POINTS[1], INITIAL_TRIANGLE_POINTS[2]);
 
       const { sideOne, sideTwo, sideThree } = values;
 
@@ -66,32 +73,31 @@ const TriangleSidesForm = () => {
       const isTri = isTriangle(alpha, beta, gamma);
 
       if (isTri) {
-        removeNode(em, triCont);
-
         const x1 = 100;
         const y1 = 400;
         const x2 = 100 + alpha;
         const y2 = 400;
 
         const { x, y } = getLastPoint(x1, y1, alpha, beta, gamma);
-        
-        polygon = addPolygon(
+
+        setPoints([
           {
             x,
             y,
-            x1,
-            y1,
-            x2,
-            y2,
           },
-        );
-
-        const svg = element('svg', { width: '500', height: '500' }, [polygon])
-        triCont = element('div', { class: 'triangle-container' }, [svg]);
-        em.appendChild(triCont);
-
+          {
+            x: x1,
+            y: y1,
+          },
+          {
+            x: x2,
+            y: y2,
+          }
+        ]);
+        
+        toggle(true);
       } else {
-        removeNode(em, triCont);
+        toggle(false);
         alert('No new triangle rendered! Please make sure that the triangle can be constructed by making sure that the sum of two arbitrary sides is greater than the last side.');
       }
     },
@@ -172,6 +178,13 @@ const TriangleSidesForm = () => {
                 </button>
               </fieldset>
             </form>
+            { showTriangle && 
+              <div className="triangle-container">
+                <svg height="500" width="500">
+                    <polygon points={getPoints(trianglePoints)} className="triangle" />
+                </svg>
+              </div>
+            }
           </em>
         </div>
       </div>
@@ -185,27 +198,3 @@ const App = () => {
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
-
-const em = document.querySelector('em');
-
-let triCont;
-
-const getCoords = polygonPoints => {
-  return polygonPoints.split(' ').map(v => {
-    return {
-      x: +v.split(',')[0],
-      y: +v.split(',')[1],
-    };
-  });
-}
-
-const addPolygon = (points) => {
-  return Polygon(
-    points.x, 
-    points.y,
-    points.x1,
-    points.y1,
-    points.x2,
-    points.y2,
-  );
-}
