@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from 'formik';
 
+import { validate } from '../form/validation';
 import { getLabelStartForSide1, getLabelStart } from '../math/label-strategy';
 import { isTriangle, getLastPoint } from '../math/triangle';
 import { getDist } from '../math/cartesian';
@@ -19,25 +20,6 @@ const INITIAL_TRIANGLE_POINTS = [
     y: 400,
   }
 ];
-
-const validateTriLen = (errors, values, val) => {
-  if (!values[val] && Number.isNaN(values[val])) {
-    errors[val] = 'This field is required.';
-  } else if (Number.isNaN(values[val])) {
-    errors[val] = 'Must be a number';
-  } else if (values[val] <= 0) {
-    errors[val] = 'Distance must be larger than zero. Example: 3';
-  }
-}
-
-const validate = values => {
-  const errors = {};
-  validateTriLen(errors, values, 'sideOne');
-  validateTriLen(errors, values, 'sideTwo');
-  validateTriLen(errors, values, 'sideThree');
-
-  return errors;
-};
 
 const getPoints = trianglePoints => {
   let polygonPoints = '';
