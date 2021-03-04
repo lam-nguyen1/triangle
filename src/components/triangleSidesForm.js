@@ -48,9 +48,15 @@ export const TriangleSidesForm = ({ onRender }) => {
 
       if (isTri) {
         onRender(values);
-        const { start, end } = translateStartPoints(p1, p2, width, height, alpha);
-        const { x, y } = getLastPoint(start.x, start.y, alpha, beta, gamma);
-        setPoints([{ x, y }, start, end]);
+        const { x, y } = getLastPoint(p1.x, p1.y, alpha, beta, gamma);
+        const { start, end } = translateStartPoints(p1, p2, {
+          width,
+          height,
+          x,
+          length: alpha,
+        });
+        const transPoint = getLastPoint(start.x, start.y, alpha, beta, gamma);
+        setPoints([transPoint, start, end]);
         
         toggle(true);
       } else {

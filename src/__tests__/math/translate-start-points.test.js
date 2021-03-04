@@ -10,9 +10,10 @@ beforeAll(() => {
 test('should translate line towards middle of x-axis', () => {
   const width = 500;
   const height = 410;
-  const alpha = 15;
+  const length = 15;
+  const x = -2;
   
-  expect(translateStartPoints(p1, p2, width, height, alpha)).toEqual({
+  expect(translateStartPoints(p1, p2, { width, height, x, length })).toEqual({
     start: {
       x: 200,
       y: 0,
@@ -27,9 +28,10 @@ test('should translate line towards middle of x-axis', () => {
 test('should keep the line starting at the beginning(to the left) of x-axis', () => {
   const width = 500;
   const height = 410;
-  const alpha = 200;
+  const length = 200;
+  const x = 20;
   
-  expect(translateStartPoints(p1, p2, width, height, alpha)).toEqual({
+  expect(translateStartPoints(p1, p2, { width, height, x, length })).toEqual({
     start: {
       x: 0,
       y: 0,
