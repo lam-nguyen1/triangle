@@ -1,25 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useFormik } from 'formik';
 
 import { validate } from '../form/validation';
 import { getLabelStartForSide1, getLabelStart } from '../math/label-strategy';
 import { isTriangle, getLastPoint } from '../math/triangle';
-import { getDist } from '../math/cartesian';
-
-const INITIAL_TRIANGLE_POINTS = [
-  {
-    x: 250,
-    y: 378940/2703,
-  },
-  {
-    x: 100,
-    y: 400,
-  },
-  {
-    x: 400,
-    y: 400,
-  }
-];
+import { getAnchoringPoints } from '../math/anchoring-points';
+import { translateStartPoints } from '../math/translate-start-points';
 
 const getPoints = trianglePoints => {
   let polygonPoints = '';
@@ -30,8 +16,17 @@ const getPoints = trianglePoints => {
 }
 
 export const TriangleSidesForm = ({ onRender }) => {
+  const [height, setHeight] = useState(null);
+  const [width, setWidth] = useState(null);
+  const triangleContainer = useCallback(node => {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+      setWidth(node.getBoundingClientRect().width);
+    }
+  }, []);
+
   const [showTriangle, toggle] = useState(false);
-  const [trianglePoints, setPoints] = useState(INITIAL_TRIANGLE_POINTS);
+  const [trianglePoints, setPoints] = useState([]);
 
   const formik = useFormik({
     initialValues: {
@@ -43,42 +38,20 @@ export const TriangleSidesForm = ({ onRender }) => {
     onSubmit: values => {
       onRender(values);
 
-      const dist1 = getDist(INITIAL_TRIANGLE_POINTS[0], INITIAL_TRIANGLE_POINTS[1]);
-      const dist2 = getDist(INITIAL_TRIANGLE_POINTS[0], INITIAL_TRIANGLE_POINTS[2]);
-      const dist3 = getDist(INITIAL_TRIANGLE_POINTS[1], INITIAL_TRIANGLE_POINTS[2]);
-
       const { sideOne, sideTwo, sideThree } = values;
-
       const max = Math.max(sideOne, sideTwo, sideThree);
+      const { p1, p2, dist } = getAnchoringPoints(width, height);
 
-      const alpha = sideOne / max * dist1;
-      const beta = sideTwo / max * dist2;
-      const gamma = sideThree / max * dist3;
+      const alpha = sideOne / max * dist;
+      const beta = sideTwo / max * dist;
+      const gamma = sideThree / max * dist;
 
       const isTri = isTriangle(alpha, beta, gamma);
 
       if (isTri) {
-        const x1 = 100;
-        const y1 = 400;
-        const x2 = 100 + alpha;
-        const y2 = 400;
-
-        const { x, y } = getLastPoint(x1, y1, alpha, beta, gamma);
-
-        setPoints([
-          {
-            x,
-            y,
-          },
-          {
-            x: x1,
-            y: y1,
-          },
-          {
-            x: x2,
-            y: y2,
-          }
-        ]);
+        const { start, end } = translateStartPoints(p1, p2, width, height, alpha);
+        const { x, y } = getLastPoint(start.x, start.y, alpha, beta, gamma);
+        setPoints([{ x, y }, start, end]);
         
         toggle(true);
       } else {
@@ -163,9 +136,9 @@ export const TriangleSidesForm = ({ onRender }) => {
                 </button>
               </fieldset>
             </form>
-            { showTriangle && 
-              <div className="triangle-container">
-                <svg height="500" width="500">
+            <div style={{ height: 500 + 'px' }} ref={triangleContainer} className="triangle-container">
+              { showTriangle &&
+                <svg width="100%" height="100%">
                     <polygon points={getPoints(trianglePoints)} className="triangle" />
                     <text 
                       x={getLabelStartForSide1(trianglePoints[1], trianglePoints[2], 20).x}
@@ -192,8 +165,8 @@ export const TriangleSidesForm = ({ onRender }) => {
                         Side 3
                     </text>
                 </svg>
-              </div>
-            }
+              }
+            </div>
           </em>
         </div>
       </div>

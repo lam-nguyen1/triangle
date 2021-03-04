@@ -4,6 +4,16 @@ import userEvent from '@testing-library/user-event';
 
 import { TriangleSidesForm } from '../../components/triangleSidesForm';
 
+beforeAll(() => {
+  /**
+   * jsdom does not support layouting, therefore mock getBoundingClientRect
+   *  so that we can calculate the sides of our triangles.
+   */
+  Object.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', { configurable: true, value: () => {
+    return { height: 500, width: 500 };
+  } });
+})
+
 test('setting valid triangle sides and rendering triangle', async () => {
   const handleRender = jest.fn();
 
