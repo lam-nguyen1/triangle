@@ -23,6 +23,19 @@ const handleRender = (values) => {
   }
 }
 
+ts.ui.ready(() => {
+	ts.ui.Note({
+    icon: 'ts-icon-heart',
+    text: `Do note that the lengths of the sides of the triangles are relative to the largest one. 
+     It gets normalized during the calculations. For example if you input 
+     side 1 = 0.6, side 2 = 0.6 and side 3 = 1, you get an isosceles triangle. 
+     The next time you input side 1 = 60, side 2 = 60 and side 3 = 100, you get the same triangle.`,
+    onclose: () => {
+      ts.ui.Notification.success('The Note is gone...');
+    }
+  });
+});
+
 const App = () => {
   return <TriangleSidesForm onRender={handleRender}/>
 }
