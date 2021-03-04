@@ -36,8 +36,6 @@ export const TriangleSidesForm = ({ onRender }) => {
     },
     validate,
     onSubmit: values => {
-      onRender(values);
-
       const { sideOne, sideTwo, sideThree } = values;
       const max = Math.max(sideOne, sideTwo, sideThree);
       const { p1, p2, dist } = getAnchoringPoints(width, height);
@@ -49,6 +47,7 @@ export const TriangleSidesForm = ({ onRender }) => {
       const isTri = isTriangle(alpha, beta, gamma);
 
       if (isTri) {
+        onRender(values);
         const { start, end } = translateStartPoints(p1, p2, width, height, alpha);
         const { x, y } = getLastPoint(start.x, start.y, alpha, beta, gamma);
         setPoints([{ x, y }, start, end]);
@@ -56,7 +55,11 @@ export const TriangleSidesForm = ({ onRender }) => {
         toggle(true);
       } else {
         toggle(false);
-        alert('No new triangle rendered! Please make sure that the triangle can be constructed by making sure that the sum of two arbitrary sides is greater than the last side.');
+        ts.ui.Notification.error(`No new triangle rendered! 
+          Please make sure that the triangle can be constructed 
+          by making sure that the sum of two arbitrary sides is 
+          greater than the last side.`
+        );
       }
     },
   });

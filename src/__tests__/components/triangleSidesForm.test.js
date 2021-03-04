@@ -35,7 +35,7 @@ test('setting valid triangle sides and rendering triangle', async () => {
   });
 });
 
-test('should not render invalid triangle', async () => {
+test('should not render triangle', async () => {
   jest.spyOn(window, 'alert').mockImplementation(() => {});
   const handleRender = jest.fn();
 
@@ -49,10 +49,5 @@ test('should not render invalid triangle', async () => {
 
   await waitFor(() => {
     expect(container.querySelector('svg')).toBeFalsy();
-    expect(handleRender).toHaveBeenCalledWith({
-      sideOne: 3,
-      sideTwo: 4,
-      sideThree: 8,
-    });
   });
 });
