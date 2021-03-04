@@ -142,12 +142,12 @@ export const TriangleSidesForm = ({ onRender }) => {
             <div style={{ height: 500 + 'px' }} ref={triangleContainer} className="triangle-container">
               { showTriangle &&
                 <svg width="100%" height="100%">
-                    <polygon points={getPoints(trianglePoints)} className="triangle" />
+                    <polygon fill="#00AEFF" points={getPoints(trianglePoints)} className="triangle" />
                     <text 
                       x={getLabelStartForSide1(trianglePoints[1], trianglePoints[2], 20).x}
                       y={getLabelStartForSide1(trianglePoints[1], trianglePoints[2], 20).y}
                       textAnchor="middle"
-                      fill="black"
+                      fill="#0F151A"
                       fontSize="14">
                         Side 1
                     </text>
@@ -155,7 +155,7 @@ export const TriangleSidesForm = ({ onRender }) => {
                       x={getLabelStart(trianglePoints[0], trianglePoints[1], -25).x}
                       y={getLabelStart(trianglePoints[0], trianglePoints[1], -25).y}
                       textAnchor="middle"
-                      fill="black"
+                      fill="#0F151A"
                       fontSize="14">
                         Side 2
                     </text>
@@ -163,7 +163,7 @@ export const TriangleSidesForm = ({ onRender }) => {
                       x={getLabelStart(trianglePoints[0], trianglePoints[2], 25).x}
                       y={getLabelStart(trianglePoints[0], trianglePoints[2], 25).y}
                       textAnchor="middle"
-                      fill="black"
+                      fill="#0F151A"
                       fontSize="14">
                         Side 3
                     </text>
