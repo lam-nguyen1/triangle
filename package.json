@@ -2,9 +2,9 @@
     "dependencies": {
         "@tradeshift/g11n-langneg": "^1.2.3",
         "@tradeshift/tradeshift-ui": "^12.7.0",
-        "formik": "^2.2.6",
         "react": "^16.8.6",
-        "react-dom": "^16.8.6"
+        "react-dom": "^16.8.6",
+        "react-hook-form": "^6.15.4"
     },
     "devDependencies": {
         "@babel/core": "^7.4.3",
