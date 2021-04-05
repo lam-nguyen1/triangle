@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { useFormik } from 'formik';
+import { useForm } from "react-hook-form";
 
-import { validate } from '../form/validation';
 import { getLabelStartForSide1, getLabelStart } from '../math/label-strategy';
 import { isTriangle, getLastPoint } from '../math/triangle';
 import { getAnchoringPoints } from '../math/anchoring-points';
@@ -13,6 +12,12 @@ const getPoints = trianglePoints => {
     polygonPoints += `${point.x}, ${point.y} `;
   });
   return polygonPoints;
+}
+
+const validate = (value) => {
+  if (+value <= 0) {
+    return 'Length must be larger than zero. Example: 3';
+  }
 }
 
 export const TriangleSidesForm = ({ onRender }) => {
@@ -28,54 +33,59 @@ export const TriangleSidesForm = ({ onRender }) => {
   const [showTriangle, toggle] = useState(false);
   const [trianglePoints, setPoints] = useState([]);
 
-  const formik = useFormik({
-    initialValues: {
+  const { 
+    register,
+    handleSubmit,
+    errors,
+    formState: { touched },
+  } = useForm({
+    mode: 'all',
+    defaultValues: {
       sideOne: '',
       sideTwo: '',
       sideThree: '',
     },
-    validate,
-    onSubmit: values => {
-      const { sideOne, sideTwo, sideThree } = values;
-      const max = Math.max(sideOne, sideTwo, sideThree);
-      const { p1, p2, dist } = getAnchoringPoints(width, height);
-
-      const alpha = sideOne / max * dist;
-      const beta = sideTwo / max * dist;
-      const gamma = sideThree / max * dist;
-
-      const isTri = isTriangle(alpha, beta, gamma);
-
-      if (isTri) {
-        onRender(values);
-        const { x, y } = getLastPoint(p1.x, p1.y, alpha, beta, gamma);
-        const { start, end } = translateStartPoints(p1, p2, {
-          width,
-          height,
-          x,
-          length: alpha,
-        });
-        const transPoint = getLastPoint(start.x, start.y, alpha, beta, gamma);
-        setPoints([transPoint, start, end]);
-        
-        toggle(true);
-      } else {
-        toggle(false);
-        ts.ui.Notification.error(`No new triangle rendered! 
-          Please make sure that the triangle can be constructed 
-          by making sure that the sum of two arbitrary sides is 
-          greater than the last side.`
-        );
-      }
-    },
   });
+  const onSubmit = (values) => {
+    const { sideOne, sideTwo, sideThree } = values;
+    const max = Math.max(sideOne, sideTwo, sideThree);
+    const { p1, p2, dist } = getAnchoringPoints(width, height);
+
+    const alpha = sideOne / max * dist;
+    const beta = sideTwo / max * dist;
+    const gamma = sideThree / max * dist;
+
+    const isTri = isTriangle(alpha, beta, gamma);
+
+    if (isTri) {
+      onRender(values);
+      const { x, y } = getLastPoint(p1.x, p1.y, alpha, beta, gamma);
+      const { start, end } = translateStartPoints(p1, p2, {
+        width,
+        height,
+        x,
+        length: alpha,
+      });
+      const transPoint = getLastPoint(start.x, start.y, alpha, beta, gamma);
+      setPoints([transPoint, start, end]);
+      
+      toggle(true);
+    } else {
+      toggle(false);
+      ts.ui.Notification.error(`No new triangle rendered! 
+        Please make sure that the triangle can be constructed 
+        by making sure that the sum of two arbitrary sides is 
+        greater than the last side.`
+      );
+    }
+  }
 
   return (
     <div data-ts="Main">
       <div data-ts="Content">
         <div data-ts="Panel">
           <em>
-            <form data-ts="Form" onSubmit={formik.handleSubmit}>
+            <form data-ts="Form" onSubmit={handleSubmit(onSubmit)}>
               <fieldset>
                 <label htmlFor="sideOne">
                   <span>Enter length of triangle side 1</span>
@@ -83,15 +93,19 @@ export const TriangleSidesForm = ({ onRender }) => {
                     id="sideOne"
                     name="sideOne"
                     type="number"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.sideOne}
+                    ref={
+                      register({
+                        required: 'This field is required. Please input a number.',
+                        valueAsNumber: true,
+                        validate,
+                      })
+                    }
                   />
                 </label>
                 {
-                  formik.touched.sideOne && formik.errors.sideOne ? 
+                  touched.sideOne && errors.sideOne ? 
                     <dl className="ts-errors">
-                      <dt>{ formik.errors.sideOne }</dt>
+                      <dt>{ errors.sideOne.message }</dt>
                     </dl> :
                     null
                 }
@@ -104,15 +118,19 @@ export const TriangleSidesForm = ({ onRender }) => {
                     id="sideTwo"
                     name="sideTwo"
                     type="number"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.sideTwo}
+                    ref={
+                      register({
+                        required: 'This field is required. Please input a number.',
+                        valueAsNumber: true,
+                        validate,
+                      })
+                    }
                   />
                 </label>
                 {
-                   formik.touched.sideTwo && formik.errors.sideTwo ? 
+                  touched.sideTwo && errors.sideTwo ? 
                     <dl className="ts-errors">
-                      <dt>{ formik.errors.sideTwo }</dt>
+                      <dt>{ errors.sideTwo.message }</dt>
                     </dl> :
                     null
                 }
@@ -125,15 +143,19 @@ export const TriangleSidesForm = ({ onRender }) => {
                     id="sideThree"
                     name="sideThree"
                     type="number"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.sideThree}
+                    ref={
+                      register({
+                        required: 'This field is required. Please input a number.',
+                        valueAsNumber: true,
+                        validate,
+                      })
+                    }
                   />
                 </label>
                 {
-                  formik.touched.sideThree && formik.errors.sideThree ? 
+                  touched.sideThree && errors.sideThree ? 
                     <dl className="ts-errors">
-                      <dt>{ formik.errors.sideThree }</dt>
+                      <dt>{ errors.sideThree.message }</dt>
                     </dl> :
                     null
                 }
