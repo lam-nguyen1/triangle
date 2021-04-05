@@ -32,7 +32,7 @@ module.exports = {
             loader: "less-loader", // compiles Less to CSS
             options: {
               lessOptions: {
-                paths: [path.resolve(__dirname, "node_modules")],
+                paths: [path.resolve(__dirname, "node_modules"), path.resolve(__dirname, "styles")],
               },
             },
           }

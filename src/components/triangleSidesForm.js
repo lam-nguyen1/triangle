@@ -167,7 +167,7 @@ export const TriangleSidesForm = ({ onRender }) => {
                 </button>
               </fieldset>
             </form>
-            <div style={{ height: 500 + 'px' }} ref={triangleContainer} className="triangle-container">
+            <div ref={triangleContainer} className="triangle-container">
               { showTriangle &&
                 <svg width="100%" height="100%">
                     <polygon fill="#00AEFF" points={getPoints(trianglePoints)} className="triangle" />
