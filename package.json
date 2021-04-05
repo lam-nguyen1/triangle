@@ -34,8 +34,9 @@
     "scripts": {
         "build": "webpack --config webpack.prod.js",
         "start": "webpack serve --config webpack.dev.js",
+        "debug": "node --inspect-brk node_modules/webpack/bin/webpack.js serve --config webpack.dev.js",
         "test": "jest",
         "test:watch": "jest --watch"
     },
-    "sideEffects": false
+    "sideEffects": true
 }
